@@ -10,8 +10,9 @@ use DaveChild\TextStatistics\TextStatistics;
 class FleschKincaid implements \IFleschKincaid
 {
 
-    private $data; // json string
+    public $data; // json string
     private $content;
+    private $readingEase;
 
     /**
      * FleschKincaid constructor.
@@ -21,6 +22,8 @@ class FleschKincaid implements \IFleschKincaid
         $this->content = $content;
         $this->data = json_encode(array(
            "reading_ease"=>$this->reading_ease(),
+            "reading_ease_description"=>$this->reading_ease_description(),
+            "school_level"=>$this->school_level(),
             "clean_text"=>$this->clean_text(),
             "character_count"=>$this->character_count(),
             "text_length"=>$this->text_length(),
@@ -43,9 +46,57 @@ class FleschKincaid implements \IFleschKincaid
         return $this->data;
     }
 
+    private function reading_ease_description():string
+    {
+        $description = "";
+        $reading_ease = $this->reading_ease();
+        if ($reading_ease <20) {
+            $description = "Very difficult to read. Best understood by university graduates";
+        } elseif($reading_ease >=20 && $reading_ease <50) {
+            $description = "Difficult to read.";
+        } elseif($reading_ease >=50 && $reading_ease <60) {
+            $description = "Fairly difficult to read.";
+        } elseif($reading_ease >=60 && $reading_ease <70) {
+            $description = "Plain English. Easily understood by 13- to 15-year-old students.";
+        } elseif($reading_ease >=70 && $reading_ease <80) {
+            $description = "Fairly easy to read.";
+        } elseif($reading_ease >=80 && $reading_ease <90) {
+            $description = "Easy to read. Conversational English for consumers.";
+        } elseif($reading_ease >90) {
+            $description = "Very easy to read. Easily understood by an average 11-year-old student.";
+        }
+        return $description;
+    }
+
+    private function school_level():string
+    {
+        $description = "";
+        $reading_ease = $this->reading_ease();
+        if ($reading_ease <20) {
+            $description = "College graduate";
+        } elseif($reading_ease >=20 && $reading_ease <50) {
+            $description = "College";
+        } elseif($reading_ease >=50 && $reading_ease <60) {
+            $description = "10th to 12th grade";
+        } elseif($reading_ease >=60 && $reading_ease <70) {
+            $description = "8th & 9th grade";
+        } elseif($reading_ease >=70 && $reading_ease <80) {
+            $description = "7th grade";
+        } elseif($reading_ease >=80 && $reading_ease <90) {
+            $description = "6th grade";
+        } elseif($reading_ease >90) {
+            $description = "5th grade";
+        }
+        return $description;
+    }
+
     private function reading_ease():float {
+        if (!empty($this->readingEase)) {
+            return $this->readingEase;
+        }
         $textStatistics = new TextStatistics();
-        return $textStatistics->flesch_kincaid_reading_ease($this->content);
+        $this->readingEase = $textStatistics->flesch_kincaid_reading_ease($this->content);
+        return $this->readingEase;
     }
 
     private function clean_text():string {
