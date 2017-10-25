@@ -7,7 +7,8 @@ namespace kdaviesnz\fleschkincaid;
 use DaveChild\TextStatistics\Text;
 use DaveChild\TextStatistics\TextStatistics;
 
-class FleschKincaid implements \IFleschKincaid
+class FleschKincaid
+
 {
 
     public $data; // json string
@@ -15,10 +16,11 @@ class FleschKincaid implements \IFleschKincaid
     private $readingEase;
 
     /**
-     * FleschKincaid constructor.
+     * Readability constructor.
      */
     public function __construct(string $content)
     {
+
         $this->content = $content;
         $this->data = json_encode(array(
            "reading_ease"=>$this->reading_ease(),
